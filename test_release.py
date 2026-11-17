@@ -38,7 +38,7 @@ def make_config(builds: Path) -> dict:
 class ReleaseTest(unittest.TestCase):
     def setUp(self):
         self.tmp = tempfile.TemporaryDirectory()
-        self.root = Path(self.tmp.name)
+        self.root = Path(self.tmp.name).resolve()  # Windows temp paths can be 8.3 short names (RUNNER~1)
         self.builds = self.root / "Builds"
         for name in ("Pico/MyApp_Pico_1.9.0.apk",
                      "Pico/MyApp_Pico_1.10.0.apk",
