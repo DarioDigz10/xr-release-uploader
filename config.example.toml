@@ -1,0 +1,53 @@
+# Copy this file to config.toml and fill it in. config.toml is ignored by git.
+# Secrets never go in it: put them in .env (see .env.example).
+#
+# [apps.<key>]                The key is what you type on the command line.
+#   name                      Shown in the window.
+#   builds_dir                Folder with the builds, relative to this repo.
+#   version_code              Optional. Android versionCode as a format string of {major}, {minor}
+#                             and {patch}. Needed only to send a split build to ArborXR, because it
+#                             names the OBB on the headset: main.<versionCode>.<package>.obb.
+#
+# [apps.<key>.devices.<device>]   Any device name: pico, quest, quest3...
+#   folder                    Build folder, relative to builds_dir.
+#   apk                       APK file name; {version} stands for x.y.z. If <name>.main.obb sits
+#                             next to the APK (Unity's "Split Application Binary"), the build is
+#                             uploaded as APK + OBB.
+#   package                   Android package name.
+#
+# Each destination table turns that upload on for the device; delete it to turn it off.
+# Every destination accepts `folder` to take its build from another folder than the device's.
+#
+#   arborxr   app_id          App ID in ArborXR (`abxr-cli apps list`).
+#             channel_id      Optional. Release channel to assign the new version to
+#                             (`abxr-cli apps release_channels <app_id>`).
+#   managexr  channel         Optional. Release channel name; ManageXR creates it if needed.
+#   meta      app_id          App ID from the API page of the Meta Horizon developer dashboard.
+#             secret_env      Name of the .env variable that holds this app's App Secret.
+#             channel         Release channel: ALPHA, BETA, RC, store...
+#             age_group       TEENS_AND_ADULTS, MIXED_AGES or CHILDREN.
+#   manual    name, url       Any other portal: the tool opens the URL, lists the files and
+#                             copies the release notes; you upload by hand.
+
+[apps.myapp]
+name = "My XR App"
+builds_dir = "../my-xr-app/Builds"
+version_code = "{major}{minor:02}{patch:02}"
+
+[apps.myapp.devices.pico]
+folder = "Pico"
+apk = "MyApp_Pico_{version}.apk"
+package = "com.example.myapp"
+arborxr = { app_id = "", channel_id = "" }
+managexr = { channel = "" }
+manual = { name = "Company Dashboard", url = "" }
+
+[apps.myapp.devices.quest]
+folder = "Quest"
+apk = "MyApp_Quest_{version}.apk"
+package = "com.example.myapp.quest"
+arborxr = { app_id = "", channel_id = "" }
+managexr = { channel = "" }
+# Meta rejects APKs over 1 GB, so it gets the split build (APK + OBB) from its own folder.
+meta = { folder = "Quest/Meta", app_id = "", secret_env = "META_APP_SECRET", channel = "", age_group = "" }
+manual = { name = "Company Dashboard", url = "" }
